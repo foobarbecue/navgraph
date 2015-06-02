@@ -3,60 +3,59 @@
  */
 
 navgraph = function (initialData, options){
-    var navgraph_class = this;
+    var ng = this;
 
-    this._diameter = 800 || options.diameter;
+    ng._diameter = 800 || options.diameter;
 
-    this.set_diameter = function(new_diameter){
-        this._diameter = new_diameter;
-        this.update_data(initialData);
-        this.draw();
+    ng.set_diameter = function(new_diameter){
+        ng._diameter = new_diameter;
+        ng.update_data(initialData);
+        ng.draw();
     };
 
-    var svg = d3.select("body").append("svg")
+    ng.svg = d3.select("body").append("svg")
         .attr("class", "nav_container")
-        .attr("width", this._diameter)
-        .attr("height", this._diameter)
+        .attr("width", ng._diameter)
+        .attr("height", ng._diameter)
         .append("g")
-        .attr("transform", "translate(0," + this._diameter + ")");
+        .attr("transform", "translate(0," + ng._diameter + ")");
 
-    this.tree = d3.layout.tree()
-        .size([90, this._diameter / 2 - 120])
+    ng.tree = d3.layout.tree()
+        .size([90, ng._diameter / 2 - 120])
         .separation(function (a, b) {
             return (a.parent == b.parent ? 1 : 2) / a.depth;
         });
 
-    this.diagonal = d3.svg.diagonal.radial()
+    ng.diagonal = d3.svg.diagonal.radial()
         .projection(function (d) {
             return [d.y, d.x / 180 * Math.PI];
         });
 
 
-    this.update_data = function(nodeData) {
-        this.nodes = this.tree.nodes(nodeData);
-        this.links = this.tree.links(this.nodes);
-        this._displayedLinks = svg.selectAll(".link")
-            .data(this.links);
-        this._displayedNodes = svg.selectAll(".node")
-            .data(this.nodes)
+    ng.update_data = function(nodeData) {
+        ng.nodes = ng.tree.nodes(nodeData);
+        ng.links = ng.tree.links(ng.nodes);
+        ng.linkSelection = ng.svg.selectAll(".link")
+            .data(ng.links);
+        ng.nodeSelection = ng.svg.selectAll(".node")
+            .data(ng.nodes, function(d){return d.name})
     };
 
-    this.draw = function(){
-        this._displayedLinks
+    ng.draw = function(){
+        ng.linkSelection
             .enter().append("path")
             .attr("class", "link")
-            .attr("d", this.diagonal);
+            .attr("d", ng.diagonal);
 
-
-        var nodeGroups = this._displayedNodes
+        ng.nodeGroups = ng.nodeSelection
             .enter().append("g")
             .attr("class", "node")
             .attr("transform", function (d) {
                 return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")";
             })
-            .on('click', this.nodeClick);
+            .on('click', ng.nodeClick);
 
-        nodeGroups
+        ng.nodeGroups
             .append("text")
             .attr("dy", ".31em")
             // Only the last-level text should be "outside"
@@ -70,36 +69,37 @@ navgraph = function (initialData, options){
                 return d.name;
             });
 
-        nodeGroups
+        ng.nodeGroups
             .append("circle")
             .attr("r", 2);
 
-        this._displayedLinks.exit().remove();
+        ng.linkSelection.exit().remove();
 
-        this._displayedNodes.exit().remove();
+        ng.nodeSelection.exit().remove();
 
-        // todo check this
-        //d3.select(self.frameElement).style("height", this.diameter - 150 + "px");
+        // todo check ng
+        //d3.select(self.frameElement).style("height", ng.diameter - 150 + "px");
     };
 
-    this.nodeClick = function(d){
+    ng.nodeClick = function(d){
         if (d.children) {
             d._children = d.children;
             d.children = null;
         } else {
             d.children = d._children;
             d._children = null;
-        }
-        navgraph_class.update(d);
+        };
+        ng.update_data(d);
+        ng.draw();
     };
 
 
-    this.update = function(nodeData) {
-        this.update_data(nodeData);
-        this.draw();
+    ng.update = function(nodeData) {
+        ng.update_data(nodeData);
+        ng.draw();
     };
 
-    this.reset = this.update(initialData, options);
+    ng.reset = function(){ng.update(initialData, options)};
 
-    this.reset();
+    ng.reset();
 };
