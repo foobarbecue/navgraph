@@ -4,13 +4,14 @@
 
 navgraph = function (initialData, options){
     var ng = this;
-
+    ng.initialData = initialData;
+    ng.i = 0;
     ng._diameter = 800 || options.diameter;
 
     ng.set_diameter = function(new_diameter){
         ng._diameter = new_diameter;
         ng.update_data(initialData);
-        ng.draw();
+        ng.update(initialData);
     };
 
     ng.svg = d3.select("body").append("svg")
@@ -32,22 +33,14 @@ navgraph = function (initialData, options){
         });
 
 
-    ng.update_data = function(nodeData) {
-        ng.nodes = ng.tree.nodes(nodeData);
-        ng.links = ng.tree.links(ng.nodes);
-        ng.linkSelection = ng.svg.selectAll(".link")
-            .data(ng.links);
-        ng.nodeSelection = ng.svg.selectAll(".node")
-            .data(ng.nodes, function(d){return d.name})
-    };
+    ng.update = function(nodeData) {
+        var nodes = ng.tree.nodes(nodeData),
+            links = ng.tree.links(nodes);
 
-    ng.draw = function(){
-        ng.linkSelection
-            .enter().append("path")
-            .attr("class", "link")
-            .attr("d", ng.diagonal);
+        var nodeSelection = ng.svg.selectAll(".node")
+            .data(nodes, function(d) { return d.id || (d.id = ++ng.i); });
 
-        ng.nodeGroups = ng.nodeSelection
+        var nodeGroups = nodeSelection
             .enter().append("g")
             .attr("class", "node")
             .attr("transform", function (d) {
@@ -55,7 +48,7 @@ navgraph = function (initialData, options){
             })
             .on('click', ng.nodeClick);
 
-        ng.nodeGroups
+        nodeGroups
             .append("text")
             .attr("dy", ".31em")
             // Only the last-level text should be "outside"
@@ -69,13 +62,21 @@ navgraph = function (initialData, options){
                 return d.name;
             });
 
-        ng.nodeGroups
+        nodeGroups
             .append("circle")
             .attr("r", 2);
 
-        ng.linkSelection.exit().remove();
+        var linkSelection = ng.svg.selectAll(".link")
+            .data(links, function(d){return d.target.id})
 
-        ng.nodeSelection.exit().remove();
+        linkSelection.enter().append("path")
+            .attr("class", "link")
+            .attr("id", function(d) { return d.id || (d.id = ++ng.i); })
+            .attr("d", ng.diagonal);
+
+        linkSelection.exit().remove();
+
+        nodeSelection.exit().remove();
 
         // todo check ng
         //d3.select(self.frameElement).style("height", ng.diameter - 150 + "px");
@@ -89,17 +90,7 @@ navgraph = function (initialData, options){
             d.children = d._children;
             d._children = null;
         };
-        ng.update_data(d);
-        ng.draw();
+        ng.update(initialData);
     };
-
-
-    ng.update = function(nodeData) {
-        ng.update_data(nodeData);
-        ng.draw();
-    };
-
-    ng.reset = function(){ng.update(initialData, options)};
-
-    ng.reset();
+    ng.update(initialData);
 };
