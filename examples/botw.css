@@ -2,4 +2,7 @@ path{
     fill: none;
     stroke: grey;
 }
-.
+text{
+    font-size: small;
+    font-family: sans-serif;
+}

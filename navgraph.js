@@ -34,7 +34,7 @@ navgraph = function (initialData, options){
 
 
     ng.update = function(nodeData) {
-        var nodes = ng.tree.nodes(nodeData),
+        var nodes = ng.tree.nodes(nodeData).reverse(),
             links = ng.tree.links(nodes);
 
         var nodeSelection = ng.svg.selectAll(".node")
@@ -46,7 +46,6 @@ navgraph = function (initialData, options){
             .attr("transform", function (d) {
                 return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")";
             })
-            .on('click', ng.nodeClick);
 
         nodeGroups
             .append("text")
@@ -58,9 +57,9 @@ navgraph = function (initialData, options){
             .attr("transform", function (d) {
                 return d.x < 180 ? "translate(8)" : "rotate(180)";
             })
-            .text(function (d) {
-                return d.name;
-            });
+            //.text(function (d) {
+            //    return d.name;
+            //});
 
         nodeGroups
             .append("circle")
@@ -69,10 +68,22 @@ navgraph = function (initialData, options){
         var linkSelection = ng.svg.selectAll(".link")
             .data(links, function(d){return d.target.id})
 
-        linkSelection.enter().append("path")
+        var linkGroups = linkSelection.enter().append("g")
             .attr("class", "link")
+
+        linkGroups
+            //.on("click", ng.linkClick)
+            .append("path")
             .attr("id", function(d) { return d.id || (d.id = ++ng.i); })
-            .attr("d", ng.diagonal);
+            .attr("d", ng.diagonal)
+
+        linkGroups
+            .on("click", ng.toggle)
+            .append("text")
+            .append("textPath")
+            .attr("startOffset","50")
+            .attr("xlink:href",function(d){return "#"+d.id})
+            .text(function(d){return d.target.name})
 
         linkSelection.exit().remove();
 
@@ -82,15 +93,17 @@ navgraph = function (initialData, options){
         //d3.select(self.frameElement).style("height", ng.diameter - 150 + "px");
     };
 
-    ng.nodeClick = function(d){
-        if (d.children) {
-            d._children = d.children;
-            d.children = null;
-        } else {
-            d.children = d._children;
-            d._children = null;
-        };
-        ng.update(initialData);
+    ng.toggle = function(d){
+        // this is for use on links, not nodes
+        var d = d.target
+            if (d.children) {
+                d._children = d.children;
+                d.children = null;
+            } else {
+                d.children = d._children;
+                d._children = null;
+            };
+            ng.update(initialData);
     };
     ng.update(initialData);
 };
