@@ -2,7 +2,7 @@
  * Created by aaron on 6/2/15.
  */
 
-navgraph = function (initialData, options){
+Navgraph = function (initialData, options){
     var ng = this;
     ng.data = initialData;
     ng.i = 0;

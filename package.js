@@ -12,6 +12,6 @@ Package.describe({
 Package.onUse(function(api) {
   api.versionsFrom('1.1.0.2');
   api.addFiles('navgraph.js');
-  api.use('d3js:d3');
+  api.use('d3js:d3@3.5.5');
   api.export('Navgraph','client');
 });
