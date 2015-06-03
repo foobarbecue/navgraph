@@ -29,7 +29,7 @@
                 "name": "Aerobots",
                 "children": [
                     {"name": "Fleet"},
-                    {"name": "Flights"}
+                    {"name": "Flog"}
                 ]
             },
             {
@@ -51,7 +51,8 @@
             }
         ]
     };
-    ng = new navgraph(topicIndex);
+    ng = new navgraph(topicIndex, {align:"bottomLeft"});
+//    ng = new navgraph(topicIndex, {align:"topLeft"});
 </script>
 </body>
 </html>

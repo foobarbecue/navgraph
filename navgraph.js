@@ -4,21 +4,34 @@
 
 navgraph = function (initialData, options){
     var ng = this;
-    ng.initialData = initialData;
+    ng.data = initialData;
     ng.i = 0;
-    ng._diameter = 800 || options.diameter;
+    ng._diameter = 900 || options.diameter;
 
     ng.set_diameter = function(new_diameter){
         ng._diameter = new_diameter;
-        ng.update(initialData);
+        ng.update(ng.data);
     };
 
     ng.svg = d3.select("body").append("svg")
         .attr("class", "nav_container")
-        .attr("width", ng._diameter)
-        .attr("height", ng._diameter)
-        .append("g")
-        .attr("transform", "translate(0,800)");
+
+    switch(options.align) {
+        case "bottomLeft":
+            ng.svg.attr("viewBox", "0 -400 400 400")
+                .attr("preserveAspectRatio", "xMinYMax")
+                .style({
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    height: "25%"
+                });
+            break;
+        case "topLeft":
+            ng.svg.attr("viewBox", "0 0 500 500")
+                .attr("preserveAspectRatio", "xMinYMin");
+            break;
+    }
 
     ng.tree = d3.layout.tree()
         .size([90, ng._diameter / 2 - 120])
@@ -50,12 +63,14 @@ navgraph = function (initialData, options){
             .append("circle")
             .attr("r", 3)
             .style("fill", "none")
-            .style("stroke", function(d){return d.children ? "none" : "black";})
+            .style("stroke", function(d){return d.children ? "none" : "black"});
 
         var linkSelection = ng.svg.selectAll(".link")
             .data(links, function(d){return d.target.id})
 
-        var linkGroups = linkSelection.enter().append("g")
+        var linkGroups = linkSelection
+            .enter()
+            .append("g")
             .attr("class", "link")
 
         linkGroups
@@ -64,6 +79,8 @@ navgraph = function (initialData, options){
             .attr("id", function(d) { return d.id || (d.id = ++ng.i); })
 
         linkSelection.selectAll("g path")
+            .transition()
+            .duration(500)
             .attr("d", ng.diagonal)
 
         linkGroups
@@ -75,7 +92,13 @@ navgraph = function (initialData, options){
             .text(function(d){return d.target.name})
             .style("text-anchor","end")
 
-        linkSelection.exit().remove();
+        // exit by squishing the path into the parent node position
+        linkSelection.exit().selectAll("path").transition()
+            .duration(500)
+            .attr("d", function(d){
+                var parentPos = {x: d.source.x, y: d.source.y};
+                return ng.diagonal({source: parentPos, target: parentPos})
+            })
 
         nodeSelection.exit().remove();
 
@@ -93,7 +116,15 @@ navgraph = function (initialData, options){
                 d.children = d._children;
                 d._children = null;
             };
-            ng.update(initialData);
+            ng.update(ng.data);
     };
-    ng.update(initialData);
+
+    ng.collapseToDepth0 = function(){
+        ng.data.children.forEach(function(node){
+                node._children = node.children;
+                node.children = null;
+            });
+        ng.update(ng.data)
+    }
+    ng.update(ng.data);
 };
