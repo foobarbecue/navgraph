@@ -10,7 +10,6 @@ navgraph = function (initialData, options){
 
     ng.set_diameter = function(new_diameter){
         ng._diameter = new_diameter;
-        ng.update_data(initialData);
         ng.update(initialData);
     };
 
@@ -19,7 +18,7 @@ navgraph = function (initialData, options){
         .attr("width", ng._diameter)
         .attr("height", ng._diameter)
         .append("g")
-        .attr("transform", "translate(0," + ng._diameter + ")");
+        .attr("transform", "translate(0," + ng._diameter + ")rotate(270)");
 
     ng.tree = d3.layout.tree()
         .size([90, ng._diameter / 2 - 120])
@@ -28,6 +27,9 @@ navgraph = function (initialData, options){
         });
 
     ng.diagonal = d3.svg.diagonal.radial()
+        // reversing the paths so that I can end-align the textPath
+        .target(function(d) { return d.source})
+        .source(function(d) { return d.target})
         .projection(function (d) {
             return [d.y, d.x / 180 * Math.PI];
         });
@@ -81,7 +83,6 @@ navgraph = function (initialData, options){
             .on("click", ng.toggle)
             .append("text")
             .append("textPath")
-            .attr("startOffset","50")
             .attr("xlink:href",function(d){return "#"+d.id})
             .text(function(d){return d.target.name})
 
