@@ -1,7 +1,7 @@
 Package.describe({
   name: 'foobarbecue:navgraph',
   version: '0.0.1',
-  summary: '',
+  summary: 'A website menu component built in d3',
   // URL to the Git repository containing the source code for this package.
   git: 'https://github.com/foobarbecue/navgraph',
   // By default, Meteor will default to using README.md for documentation.
