@@ -18,7 +18,7 @@ navgraph = function (initialData, options){
         .attr("width", ng._diameter)
         .attr("height", ng._diameter)
         .append("g")
-        .attr("transform", "translate(0," + ng._diameter + ")rotate(270)");
+        .attr("transform", "translate("+ng._diameter +",0)rotate(180)");
 
     ng.tree = d3.layout.tree()
         .size([90, ng._diameter / 2 - 120])
@@ -31,12 +31,12 @@ navgraph = function (initialData, options){
         .target(function(d) { return d.source})
         .source(function(d) { return d.target})
         .projection(function (d) {
-            return [d.y, d.x / 180 * Math.PI];
+            return [d.y, d.x / 180 * Math.PI];start
         });
 
 
     ng.update = function(nodeData) {
-        var nodes = ng.tree.nodes(nodeData).reverse(),
+        var nodes = ng.tree.nodes(nodeData),
             links = ng.tree.links(nodes);
 
         var nodeSelection = ng.svg.selectAll(".node")
@@ -45,27 +45,12 @@ navgraph = function (initialData, options){
         var nodeGroups = nodeSelection
             .enter().append("g")
             .attr("class", "node")
-            .attr("transform", function (d) {
-                return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")";
-            })
-
-        nodeGroups
-            .append("text")
-            .attr("dy", ".31em")
-            // Only the last-level text should be "outside"
-            .attr("text-anchor", function (d) {
-                return d.children ? "end" : "start";
-            })
-            .attr("transform", function (d) {
-                return d.x < 180 ? "translate(8)" : "rotate(180)";
-            })
-            //.text(function (d) {
-            //    return d.name;
-            //});
 
         nodeGroups
             .append("circle")
-            .attr("r", 2);
+            .attr("r", 3)
+            .style("fill", "none")
+            .style("stroke", function(d){return d.children ? "none" : "black";})
 
         var linkSelection = ng.svg.selectAll(".link")
             .data(links, function(d){return d.target.id})
@@ -77,6 +62,8 @@ navgraph = function (initialData, options){
             //.on("click", ng.linkClick)
             .append("path")
             .attr("id", function(d) { return d.id || (d.id = ++ng.i); })
+
+        linkSelection.selectAll("g path")
             .attr("d", ng.diagonal)
 
         linkGroups
