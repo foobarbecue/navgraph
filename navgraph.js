@@ -24,7 +24,7 @@ Navgraph = function (initialData, options){
                     position: "absolute",
                     bottom: 0,
                     left: 0,
-                    height: "25%"
+                    height: "40%"
                 });
             break;
         case "topLeft":
@@ -67,6 +67,7 @@ Navgraph = function (initialData, options){
 
         var linkSelection = ng.svg.selectAll(".link")
             .data(links, function(d){return d.target.id})
+            .style("font-weight" , function(d){return d.target.selected ? "bold" : "normal"})
 
         var linkGroups = linkSelection
             .enter()
@@ -107,16 +108,18 @@ Navgraph = function (initialData, options){
     };
 
     ng.toggle = function(d){
-        // this is for use on links, not nodes
+        // do the rest on the node at end of clicked link
         var d = d.target
-            if (d.children) {
-                d._children = d.children;
-                d.children = null;
-            } else {
-                d.children = d._children;
-                d._children = null;
-            };
-            ng.update(ng.data);
+        d.selected = d.selected ? false : true;
+        if (d.children) {
+            d._children = d.children;
+            d.children = null;
+        } else {
+            d.children = d._children;
+            d._children = null;
+            d.children.forEach(function(child){child.selected = true});
+        };
+        ng.update(ng.data);
     };
 
     ng.collapseToDepth0 = function(){
