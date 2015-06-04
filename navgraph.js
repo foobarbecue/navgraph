@@ -68,7 +68,9 @@ Navgraph = function (initialData, options){
 
         var linkSelection = ng.svg.selectAll(".link")
             .data(links, function(d){return d.target.id})
-            .style("font-weight" , function(d){return d.target.selected ? "bold" : "normal"})
+            .style("font-weight" , function(d){
+                return d.target == ng.selected ? "bold" : "normal"
+            })
 
         var linkGroups = linkSelection
             .enter()
@@ -110,9 +112,8 @@ Navgraph = function (initialData, options){
 
     ng.toggle = function(d){
         // do the rest on the node at end of clicked link
-        var d = d.target
-        d.selected = d.selected ? false : true;
-        d.parent.selected = false;
+        var d = d.target;
+        ng.selected = d;
         if (d.children) {
             d._children = d.children;
             d.children = null;
@@ -129,11 +130,6 @@ Navgraph = function (initialData, options){
                 node.children = null;
             });
         ng.update(ng.data)
-    }
-
-    ng.deselectAll = function(d){
-        d3.selectAll('.node').each(function(d){d.selected = false});
-        ng.update(ng.data);
     }
 
     ng.setup(options);
