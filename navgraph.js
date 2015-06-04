@@ -5,13 +5,29 @@
 Navgraph = function (initialData, options){
     var ng = this;
 
+    ng.svg = d3.select("body").append("svg")
+        .attr("class", "nav_container")
+
+
+    var ancestors = function(obj, ancestorArray){
+        // return a list of the current object, its parents, grandparents, and so on
+        var ancestorArray = ancestorArray || [obj];
+        if (obj.parent) {
+            ancestorArray.push(obj.parent);
+            ancestors(obj.parent, ancestorArray);
+        } else {
+            //return ancestorArray;
+            return ancestorArray
+        }
+        return ancestorArray
+    };
+
     ng.setup = function(options){
         ng.data = initialData;
         ng.i = 0;
         ng._diameter = options.diameter || 800;
-
-        ng.svg = d3.select("body").append("svg")
-            .attr("class", "nav_container")
+        ng.selected = {};
+        ng.selected.ancestors = [];
 
         switch(options.align) {
             case "bottomLeft":
@@ -21,20 +37,31 @@ Navgraph = function (initialData, options){
                         position: "absolute",
                         bottom: 0,
                         left: 0,
-                        width: "100%"
+                        width: "100%",
+                        "font-size": "5pt"
                     });
                 break;
-            case "topLeft":1800
+            case "topLeft":
                 ng.svg.attr("viewBox", "0 0 500 500")
                     .attr("preserveAspectRatio", "xMinYMin");
                 break;
         }
 
         ng.tree = d3.layout.tree()
-            .size([90, ng._diameter / 2 - 120])
+            .size([90, ng._diameter])
             .separation(function (a, b) {
                 return (a.parent == b.parent ? 1 : 2) / a.depth;
-            });
+            })
+            .sort(function(a,b){  // TODO Performance prob. horrible
+                if (ng.selected.ancestors.indexOf(a) != 0) {
+                    return -1
+                } else if (ng.selected.ancestors.indexOf(b) != 0){
+                    return 1
+                }
+                else {
+                    return a.name > b.name ? 1 : -1
+                };
+            }) //Sort alphabetically
 
         ng.diagonal = d3.svg.diagonal.radial()
             // reversing the paths so that I can end-align the textPath
@@ -88,8 +115,8 @@ Navgraph = function (initialData, options){
             .attr("d", ng.diagonal)
 
         linkGroups
-            .on("click", ng.toggle)
             .append("text")
+            .on("click", ng.toggle)
             .append("textPath")
             .attr("xlink:href",function(d){return "#"+d.id})
             .attr("startOffset","100%")
@@ -114,6 +141,7 @@ Navgraph = function (initialData, options){
         // do the rest on the node at end of clicked link
         var d = d.target;
         ng.selected = d;
+        ng.selected.ancestors = ancestors(d);
         if (d.children) {
             d._children = d.children;
             d.children = null;
