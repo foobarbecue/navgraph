@@ -4,53 +4,54 @@
 
 Navgraph = function (initialData, options){
     var ng = this;
-    ng.data = initialData;
-    ng.i = 0;
-    ng._diameter = 900 || options.diameter;
 
-    ng.set_diameter = function(new_diameter){
-        ng._diameter = new_diameter;
-        ng.update(ng.data);
+    ng.setup = function(options){
+        ng.data = initialData;
+        ng.i = 0;
+        ng._diameter = options.diameter || 800;
+
+        ng.svg = d3.select("body").append("svg")
+            .attr("class", "nav_container")
+
+        switch(options.align) {
+            case "bottomLeft":
+                ng.svg.attr("viewBox", "0 -400 400 400")
+                    .attr("preserveAspectRatio", "xMinYMax")
+                    .style({
+                        position: "absolute",
+                        bottom: 0,
+                        left: 0,
+                        width: "100%"
+                    });
+                break;
+            case "topLeft":1800
+                ng.svg.attr("viewBox", "0 0 500 500")
+                    .attr("preserveAspectRatio", "xMinYMin");
+                break;
+        }
+
+        ng.tree = d3.layout.tree()
+            .size([90, ng._diameter / 2 - 120])
+            .separation(function (a, b) {
+                return (a.parent == b.parent ? 1 : 2) / a.depth;
+            });
+
+        ng.diagonal = d3.svg.diagonal.radial()
+            // reversing the paths so that I can end-align the textPath
+            //.target(function(d) { return d.source})
+            //.source(function(d) { return d.target})
+            .projection(function (d) {
+                return [d.y, d.x / 180 * Math.PI];
+            });
     };
 
-    ng.svg = d3.select("body").append("svg")
-        .attr("class", "nav_container")
-
-    switch(options.align) {
-        case "bottomLeft":
-            ng.svg.attr("viewBox", "0 -400 400 400")
-                .attr("preserveAspectRatio", "xMinYMax")
-                .style({
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    height: "40%"
-                });
-            break;
-        case "topLeft":
-            ng.svg.attr("viewBox", "0 0 500 500")
-                .attr("preserveAspectRatio", "xMinYMin");
-            break;
-    }
-
-    ng.tree = d3.layout.tree()
-        .size([90, ng._diameter / 2 - 120])
-        .separation(function (a, b) {
-            return (a.parent == b.parent ? 1 : 2) / a.depth;
-        });
-
-    ng.diagonal = d3.svg.diagonal.radial()
-        // reversing the paths so that I can end-align the textPath
-        //.target(function(d) { return d.source})
-        //.source(function(d) { return d.target})
-        .projection(function (d) {
-            return [d.y, d.x / 180 * Math.PI];start
-        });
-
-
     ng.update = function(nodeData) {
+        nodeData = nodeData || ng.data;
         var nodes = ng.tree.nodes(nodeData),
             links = ng.tree.links(nodes);
+
+        // Normalize for fixed-depth.
+        nodes.forEach(function(d) { d.y = d.depth * 80; });
 
         var nodeSelection = ng.svg.selectAll(".node")
             .data(nodes, function(d) { return d.id || (d.id = ++ng.i); });
@@ -111,13 +112,13 @@ Navgraph = function (initialData, options){
         // do the rest on the node at end of clicked link
         var d = d.target
         d.selected = d.selected ? false : true;
+        d.parent.selected = false;
         if (d.children) {
             d._children = d.children;
             d.children = null;
         } else {
-            d.children = d._children;
+            d.children = d._children || null;
             d._children = null;
-            d.children.forEach(function(child){child.selected = true});
         };
         ng.update(ng.data);
     };
@@ -129,5 +130,12 @@ Navgraph = function (initialData, options){
             });
         ng.update(ng.data)
     }
+
+    ng.deselectAll = function(d){
+        d3.selectAll('.node').each(function(d){d.selected = false});
+        ng.update(ng.data);
+    }
+
+    ng.setup(options);
     ng.update(ng.data);
 };
