@@ -5,10 +5,6 @@
 Navgraph = function (initialData, options){
     var ng = this;
 
-    ng.svg = d3.select("body").append("svg")
-        .attr("class", "nav_container")
-
-
     var ancestors = function(obj, ancestorArray){
         // return a list of the current object, its parents, grandparents, and so on
         var ancestorArray = ancestorArray || [obj];
@@ -29,6 +25,29 @@ Navgraph = function (initialData, options){
         ng.selected = {};
         ng.selected.ancestors = [];
 
+        ng.svg = d3.select("body").append("svg")
+            .attr("class", "nav_container")
+
+        // Create the title for the nav menu
+        if (!!options.title) {
+            ng.title = d3.select("body").append("div")
+                .attr("class","nav_title")
+                .attr("class",options.title)
+                .text(options.title)
+
+            ng.title.style({
+                'font-variant':'small-caps',
+                'font-size': 'large',
+                'box-shadow': '0 0 10px',
+                'opacity': 0.8,
+                'background': 'white'
+            })
+
+            ng.svg.attr("class",options.title)
+
+        }
+
+
         switch(options.align) {
             case "bottomLeft":
                 ng.svg.attr("viewBox", "0 -400 400 400")
@@ -40,11 +59,34 @@ Navgraph = function (initialData, options){
                         width: "100%",
                         "font-size": "5pt"
                     });
+                ng.title.style({
+                    position: 'absolute',
+                    bottom: '20px',
+                    left: '10px',
+
+                });
                 break;
             case "topLeft":
-                ng.svg.attr("viewBox", "0 0 500 500")
-                    .attr("preserveAspectRatio", "xMinYMin");
+                ng.svg.attr("viewBox", "0 0 400 400")
+                    .attr("preserveAspectRatio", "xMinYMin")
+                    .style({
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        "font-size": "5pt"
+                    });
+                ng.title.style({
+                    position: 'absolute',
+                    top: '20px',
+                    left: '10px',
+
+                });
                 break;
+            //case "topLeft":
+            //    ng.svg.attr("viewBox", "0 0 500 500")
+            //        .attr("preserveAspectRatio", "xMinYMin");
+            //    break;
         }
 
         ng.tree = d3.layout.tree()
@@ -70,6 +112,7 @@ Navgraph = function (initialData, options){
             .projection(function (d) {
                 return [d.y, d.x / 180 * Math.PI];
             });
+
     };
 
     ng.update = function(nodeData) {
@@ -78,7 +121,11 @@ Navgraph = function (initialData, options){
             links = ng.tree.links(nodes);
 
         // Normalize for fixed-depth.
-        nodes.forEach(function(d) { d.y = d.depth * 80; });
+        nodes.forEach(function(d) { d.y = d.depth * 80;
+            if (options.align == 'topLeft') {
+                d.x = d.x + 90
+            }
+        });
 
         var nodeSelection = ng.svg.selectAll(".node")
             .data(nodes, function(d) { return d.id || (d.id = ++ng.i); });
@@ -133,13 +180,21 @@ Navgraph = function (initialData, options){
 
         nodeSelection.exit().remove();
 
+        ng.title.on('click',
+            function(){
+                ng.toggle(ng.data)
+            }
+        )
+
         // todo check ng
         //d3.select(self.frameElement).style("height", ng.diameter - 150 + "px");
     };
 
     ng.toggle = function(d){
         // do the rest on the node at end of clicked link
-        var d = d.target;
+        if (!!d.target) {
+            var d = d.target
+        };
         ng.selected = d;
         ng.selected.ancestors = ancestors(d);
         if (d.children) {
