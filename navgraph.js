@@ -2,6 +2,16 @@
  * Created by aaron on 6/2/15.
  */
 
+function guid() {
+    function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
+    }
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+        s4() + '-' + s4() + s4() + s4();
+}
+
 Navgraph = function (initialData, options){
     var ng = this;
 
@@ -83,10 +93,6 @@ Navgraph = function (initialData, options){
 
                 });
                 break;
-            //case "topLeft":
-            //    ng.svg.attr("viewBox", "0 0 500 500")
-            //        .attr("preserveAspectRatio", "xMinYMin");
-            //    break;
         }
 
         ng.tree = d3.layout.tree()
@@ -128,7 +134,7 @@ Navgraph = function (initialData, options){
         });
 
         var nodeSelection = ng.svg.selectAll(".node")
-            .data(nodes, function(d) { return d.id || (d.id = ++ng.i); });
+            .data(nodes, function(d) { return d.id || (d.id = guid()); });
 
         var nodeGroups = nodeSelection
             .enter().append("g")
@@ -152,9 +158,8 @@ Navgraph = function (initialData, options){
             .attr("class", "link")
 
         linkGroups
-            //.on("click", ng.linkClick)
             .append("path")
-            .attr("id", function(d) { return d.id || (d.id = ++ng.i); })
+            .attr("id", function(d) { return d.id || (d.id = guid()); })
 
         linkSelection.selectAll("g path")
             .transition()

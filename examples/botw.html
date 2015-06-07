@@ -31,8 +31,10 @@
                     {"name": "Fleet"},
                     {"name": "Flog"}
                 ]
-            },
-            {
+            }]};
+
+    var personalIndex = {
+            "children":[{
                 "name": "Web presence",
                 "children": [
                     {"name": "Github"},
@@ -51,12 +53,12 @@
             }
         ]
     };
-    top_ng = new Navgraph(topicIndex, {align:"topLeft", diameter:1000,
+
+    var top_ng = new Navgraph(personalIndex, {align:"topLeft", diameter:1000,
         title: "main index"});
     top_ng.collapseToDepth0();
-    bottom_ng = new Navgraph(topicIndex, {align:"bottomLeft", diameter:1000, title: 'topic index'});
-    bottom_ng.collapseToDepth0();
-//    ng = new navgraph(topicIndex, {align:"topLeft"});
+//    var bottom_ng = new Navgraph(topicIndex, {align:"bottomLeft", diameter:1000, title: 'topic index'});
+//    bottom_ng.collapseToDepth0();
 </script>
 </body>
 </html>
