@@ -34,15 +34,14 @@ Navgraph = function (initialData, options){
         ng._diameter = options.diameter || 800;
         ng.selected = {};
         ng.selected.ancestors = [];
-
-        ng.svg = d3.select("body").append("svg")
-            .attr("class", "nav_container")
+        ng.svg = options.nav_container ||
+            d3.select("body").append("svg")
+                .attr("class", "nav_container");
 
         // Create the title for the nav menu
         if (!!options.title) {
             ng.title = d3.select("body").append("div")
-                .attr("class","nav_title")
-                .attr("class",options.title)
+                .attr("class","nav_title " + options.title.replace(' ','_'))
                 .text(options.title)
 
             ng.title.style({
@@ -53,7 +52,7 @@ Navgraph = function (initialData, options){
                 'background': 'white'
             })
 
-            ng.svg.attr("class",options.title)
+            ng.svg.attr("class","navgraph" + options.title.replace(' ','_'))
 
         }
 
