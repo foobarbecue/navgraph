@@ -227,3 +227,6 @@ Navgraph = function (initialData, options){
     ng.setup(options);
     ng.update(ng.data);
 };
+
+//TODO use proper export
+window.Navgraph = window.Navgraph || Navgraph;
