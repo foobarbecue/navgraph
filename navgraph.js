@@ -178,7 +178,12 @@ Navgraph = function (initialData, options){
         linkSelection.exit().selectAll("path").transition()
             .duration(500)
             .attr("d", function(d){
-                var parentPos = {x: d.source.x, y: d.source.y};
+                if (d.source.x && d.source.y) {
+                    var parentPos = {x: d.source.x, y: d.source.y};
+                }
+                else{
+                    var parentPos = {x:0, y:0}
+                }
                 return ng.diagonal({source: parentPos, target: parentPos})
             })
 
