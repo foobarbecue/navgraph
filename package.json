@@ -1,0 +1,30 @@
+{
+  "name": "navgraph",
+  "version": "0.1.0",
+  "description": "A website menu component built in d3",
+  "main": "navgraph.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/foobarbecue/navgraph.git"
+  },
+  "keywords": [
+    "navigation",
+    "d3",
+    "menu"
+  ],
+  "author": "Aaron Curtis",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/foobarbecue/navgraph/issues"
+  },
+  "homepage": "https://github.com/foobarbecue/navgraph#readme",
+  "dependencies": {
+    "d3": "^3.5.17"
+  }
+}
