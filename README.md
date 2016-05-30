@@ -1,7 +1,14 @@
 This is a pretty menu for a website.
 
 # Installation
-Clone this repository and then run "npm update" to download a local copy of d3.
+```
+npm install navgraph
+```
+Or, clone this repository, and then
+```
+cd navgraph
+npm update
+```
 
 # Use
 There is an example with a couple of menus in examples/botw.html.
