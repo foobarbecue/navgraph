@@ -1,4 +1,10 @@
-This is a pretty menu for a website. See examples/botw.html for usage.
+This is a pretty menu for a website.
+
+# Installation
+Clone this repository and then run "npm update" to download a local copy of d3.
+
+# Use
+There is an example with a couple of menus in examples/botw.html.
 
 To create a navgraph:
 ```
