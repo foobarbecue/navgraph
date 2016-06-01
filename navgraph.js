@@ -52,7 +52,7 @@ Navgraph = function (initialData, options){
                 'background': 'white'
             })
 
-            ng.svg.attr("class","navgraph" + options.title.replace(' ','_'))
+            ng.svg.attr("class","navgraph " + options.title.replace(' ','_'))
 
         }
 
