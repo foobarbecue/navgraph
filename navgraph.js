@@ -216,13 +216,19 @@ Navgraph = function (initialData, options){
         ng.update(ng.data);
     };
 
-    ng.collapseToDepth0 = function(){
+    ng.collapseToDepth1 = function(){
         ng.data.children.forEach(function(node){
                 node._children = node.children;
                 node.children = null;
             });
-        ng.update(ng.data)
-    }
+        ng.update(ng.data);
+    };
+
+    ng.collapseToDepth0 = function(){
+        ng.data._children = ng.data.children;
+        ng.data.children = null;
+        ng.update(ng.data);
+    };
 
     ng.setup(options);
     ng.update(ng.data);
