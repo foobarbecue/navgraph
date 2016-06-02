@@ -189,11 +189,13 @@ Navgraph = function (initialData, options){
 
         nodeSelection.exit().remove();
 
-        ng.title.on('click',
-            function(){
-                ng.toggle(ng.data)
-            }
-        )
+        if (options.toggle_on_click_title) {
+            ng.title.on('click',
+                function () {
+                    ng.toggle(ng.data)
+                }
+            );
+        };
 
         // todo check ng
         //d3.select(self.frameElement).style("height", ng.diameter - 150 + "px");
