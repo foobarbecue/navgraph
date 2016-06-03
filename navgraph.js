@@ -29,7 +29,7 @@ Navgraph = function (initialData, options){
     };
 
     ng.setup = function(options){
-        ng.data = initialData;
+        ng.data = Object.assign({}, initialData); //Create a shallow copy
         ng.i = 0;
         ng._diameter = options.diameter || 800;
         ng.selected = {};
@@ -201,6 +201,7 @@ Navgraph = function (initialData, options){
         //d3.select(self.frameElement).style("height", ng.diameter - 150 + "px");
     };
 
+    // TODO write a generic function for transition to given depth
     ng.toggle = function(d){
         // do the rest on the node at end of clicked link
         if (!!d.target) {
@@ -223,6 +224,11 @@ Navgraph = function (initialData, options){
                 node._children = node.children;
                 node.children = null;
             });
+        ng.update(ng.data);
+    };
+
+    ng.reset = function(){
+        ng.setup(options);
         ng.update(ng.data);
     };
 
