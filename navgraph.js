@@ -207,14 +207,18 @@ Navgraph = function (initialData, options){
         if (!!d.target) {
             var d = d.target
         };
-        ng.selected = d;
-        ng.selected.ancestors = ancestors(d);
-        if (d.children) {
-            d._children = d.children;
-            d.children = null;
+        if (ng.selected == d && !d.hasOwnProperty('children')){
+            ng.selected = {ancestors:[]}; //TODO unhackify
         } else {
-            d.children = d._children || null;
-            d._children = null;
+            ng.selected = d;
+            ng.selected.ancestors = ancestors(d);
+            if (d.children) {
+                d._children = d.children;
+                d.children = null;
+            } else {
+                d.children = d._children || null;
+                d._children = null;
+            }
         };
         ng.update(ng.data);
     };
