@@ -62,7 +62,7 @@ Navgraph = function (initialData, options){
                 ng.svg.attr("viewBox", "0 -400 400 400")
                     .attr("preserveAspectRatio", "xMinYMax")
                     .style({
-                        position: "absolute",
+                        position: "fixed",
                         bottom: 0,
                         left: 0,
                         width: "100%",
@@ -79,14 +79,14 @@ Navgraph = function (initialData, options){
                 ng.svg.attr("viewBox", "0 0 400 400")
                     .attr("preserveAspectRatio", "xMinYMin")
                     .style({
-                        position: "absolute",
+                        position: "fixed",
                         top: 0,
                         left: 0,
                         width: "100%",
                         "font-size": "5pt"
                     });
                 ng.title.style({
-                    position: 'absolute',
+                    position: 'fixed',
                     top: '20px',
                     left: '10px',
 
