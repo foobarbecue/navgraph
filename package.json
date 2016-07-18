@@ -1,6 +1,6 @@
 {
   "name": "navgraph",
-  "version": "0.2.1",
+  "version": "0.2.3",
   "description": "A website menu component built in d3",
   "main": "navgraph.js",
   "directories": {
@@ -18,7 +18,9 @@
     "d3",
     "menu"
   ],
-  "author": "Aaron Curtis",
+  "author": {
+    "name": "Aaron Curtis"
+  },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/foobarbecue/navgraph/issues"
@@ -26,5 +28,11 @@
   "homepage": "https://github.com/foobarbecue/navgraph#readme",
   "dependencies": {
     "d3": "^3.5.17"
-  }
+  },
+  "readme": "This is a pretty menu for a website.\n\n# Installation\n```\nnpm install navgraph\n```\nOr, clone this repository, and then\n```\ncd navgraph\nnpm update\n```\n\n# Use\nThere is an example with a couple of menus in examples/botw.html.\n\nTo create a navgraph:\n```\nmynavgraph = new navgraph(data, options);\n```\n\nData is a nested object something like:\n \n```\nvar data = {\n    name: \"foo\",\n    children: [\n        {name:\"bar\"},\n        {name:\"baz\"\n         children: ...   \n        }\n    ]\n}\n```",
+  "readmeFilename": "README.md",
+  "gitHead": "8c5ba9c4fd271bc1e7bd48c131898218f3593040",
+  "_id": "navgraph@0.2.1",
+  "_shasum": "995804502f8cfc61ca6e32b80ef107907e1a2816",
+  "_from": "navgraph@>=0.2.1 <0.3.0"
 }

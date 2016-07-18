@@ -199,6 +199,8 @@ Navgraph = function (initialData, options){
 
         // todo check ng
         //d3.select(self.frameElement).style("height", ng.diameter - 150 + "px");
+
+        ng.selected = {ancestors:[]}; //clear selection
     };
 
     // TODO write a generic function for transition to given depth
