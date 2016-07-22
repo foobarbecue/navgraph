@@ -30,6 +30,7 @@ Navgraph = function (initialData, options){
 
     ng.setup = function(options){
         ng.data = Object.assign({}, initialData); //Create a shallow copy
+        ng.initialData = initialData; // for safekeeping
         ng.i = 0;
         ng._diameter = options.diameter || 800;
         ng.selected = {};
@@ -200,12 +201,16 @@ Navgraph = function (initialData, options){
         // todo check ng
         //d3.select(self.frameElement).style("height", ng.diameter - 150 + "px");
 
-        ng.selected = {ancestors:[]}; //clear selection
+        // clear selection if collapsed
+        if (ng.data._children == ng.initialData.children){
+            ng.selected={ancestors:[]};
+        }
     };
 
     // TODO write a generic function for transition to given depth
     ng.toggle = function(d){
-        // do the rest on the node at end of clicked link
+        // when this function is called from a click handler, d.target is the clicked link
+        // and that's the one we want to expand or collapse
         if (!!d.target) {
             var d = d.target
         };
